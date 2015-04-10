@@ -77,14 +77,8 @@
 (defvar hs-org/trigger-keys-all (list [S-tab] [S-iso-lefttab] [(shift tab)] [backtab])
   "The keys to bind to toggle all block visibility.")
 
-(defvar hs-org/minor-mode-map nil
-  "The keymap of hs-org/minor-mode")
-
 (defvar hs-org/started-hideshow-p nil
   "Did I start hideshow when my minor mode was invoked?")
-
-(unless hs-org/minor-mode-map
-  (setq hs-org/minor-mode-map (make-sparse-keymap)))
 
 (defvar hs-org/hide-show-all-next nil
   "Keeps the state of how the buffer was last toggled by Shift TABing.")
@@ -118,12 +112,14 @@ When hs-org minor mode is enabled, the TAB key toggles the
 visible state of the code, and shift TAB toggles the visible
 state of the entire file.
 
-You can customize the key through `hs-org/trigger-key-block'."
+You can customize the key through `hs-org/trigger-key-block'.
+\\{hs-org/minor-mode-map}"
   ;; The initial value.
   nil
   ;; The indicator for the mode line.  Nothing.  hs will already be in there.
   ""
   :group 'editing
+  :keymap (make-sparse-keymap)
   
   (hs-org/define-keys)
   ;; We want hs-minor-mode on when hs-org/minor-mode is on.

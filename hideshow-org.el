@@ -91,16 +91,15 @@
                hs-org/started-hideshow-p))
   (make-variable-buffer-local var))
 
-(defmacro hs-org/define-keys ()
-  `(progn 
-     ,@(mapcar (lambda (key) `(hs-org/define-key ,key hs-org/hideshow)) hs-org/trigger-keys-block)
-     ,@(mapcar (lambda (key) `(hs-org/define-key ,key hs-org/hideshow-all)) hs-org/trigger-keys-all)
-     ))
-
 ;; No closures is killing me!
-(defmacro hs-org/define-key (key function)
-  `(define-key hs-org/minor-mode-map ,key (lambda () (interactive)
-                                                  (,function ,key))))
+(defun hs-org/define-key (map key function)
+  (define-key map key `(lambda () (interactive) (,function ,key))))
+
+(defun hs-org/make-keymap ()
+  (let ((map (make-sparse-keymap)))
+    (mapc (lambda (key) (hs-org/define-key map key 'hs-org/hideshow)) hs-org/trigger-keys-block)
+    (mapc (lambda (key) (hs-org/define-key map key 'hs-org/hideshow-all)) hs-org/trigger-keys-all)
+    map))
 
 (define-minor-mode hs-org/minor-mode
     "Toggle hs-org minor mode.
@@ -113,15 +112,12 @@ visible state of the code, and shift TAB toggles the visible
 state of the entire file.
 
 You can customize the key through `hs-org/trigger-key-block'.
+
 \\{hs-org/minor-mode-map}"
-  ;; The initial value.
-  nil
-  ;; The indicator for the mode line.  Nothing.  hs will already be in there.
-  ""
+  :lighter ""				; Nothing.  hs will already be in there.
+  :keymap (hs-org/make-keymap)
   :group 'editing
-  :keymap (make-sparse-keymap)
   
-  (hs-org/define-keys)
   ;; We want hs-minor-mode on when hs-org/minor-mode is on.
   (if hs-org/minor-mode
       ;; hs-org/minor-mode was turned on.
